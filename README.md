@@ -1,7 +1,7 @@
 # Dental Claims Automation Performance Dashboard
 ### Business Process Analyst Portfolio Project | Jeevan Lal Mourya
 
-> Analyzes the impact of claims processing automation at a dental insurance company using SQL, Python, and interactive dashboarding — directly aligned with the TriForza Business Process Analyst Intern role.
+> Analyzes the impact of claims processing automation at a dental insurance company using SQL, Python, and interactive dashboarding 
 
 ---
 
