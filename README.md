@@ -1,6 +1,6 @@
 # Dental Claims Automation Performance Dashboard
 ![Dashboard Preview ](image1.png)
-![Uploading image.png…]()
+![Dashboard Preview ](image.png)
 ![Claims Process Map](process_map.png)
 
 ### Business Process Analyst Portfolio Project | Jeevan Lal Mourya
