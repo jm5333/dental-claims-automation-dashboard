@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dental Claims Automation Performance Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f5f7;color:#1a1a2e;min-height:100vh}
+  .topbar{background:#1a1a2e;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+  .topbar h1{font-size:16px;font-weight:600;letter-spacing:.02em}
+  .topbar span{font-size:12px;opacity:.6}
+  .badge{display:inline-block;background:#00c49a22;color:#00c49a;border:1px solid #00c49a44;border-radius:4px;font-size:11px;padding:2px 8px;margin-left:10px;font-weight:600}
+  .container{max-width:1200px;margin:0 auto;padding:20px 24px}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  .kpi{background:#fff;border-radius:10px;padding:18px 20px;border:1px solid #e8eaf0;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+  .kpi .label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:8px}
+  .kpi .value{font-size:28px;font-weight:700;color:#1a1a2e;line-height:1}
+  .kpi .sub{font-size:12px;margin-top:6px;display:flex;align-items:center;gap:4px}
+  .up{color:#00c49a}.dn{color:#ef4444}
+  .arrow-up::before{content:"▲ "}.arrow-dn::before{content:"▼ "}
+  .charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
+  .charts-grid2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+  .card{background:#fff;border-radius:10px;border:1px solid #e8eaf0;padding:20px}
+  .card h3{font-size:13px;font-weight:600;color:#444;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em}
+  .toggle-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .toggle-btn{font-size:12px;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#555;transition:all .15s}
+  .toggle-btn.active{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;padding:7px 10px;background:#f8f9fb;color:#666;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #eee}
+  td{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:#333}
+  tr:last-child td{border:none}
+  .pill{display:inline-block;border-radius:99px;font-size:11px;font-weight:600;padding:2px 8px}
+  .pill-green{background:#dcfce7;color:#166534}
+  .pill-red{background:#fee2e2;color:#991b1b}
+  .pill-amber{background:#fef9c3;color:#854d0e}
+  .pill-blue{background:#dbeafe;color:#1e40af}
+  .footer{text-align:center;font-size:11px;color:#aaa;padding:20px;margin-top:4px}
+  canvas{max-width:100%}
+  .roi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .roi-item{background:#f8f9fb;border-radius:8px;padding:12px 14px}
+  .roi-item .rv{font-size:22px;font-weight:700;color:#1a1a2e}
+  .roi-item .rl{font-size:11px;color:#888;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div><span style="opacity:.5;font-size:13px">TriForza — Washington Dental Service</span>
+    <h1>Dental Claims Automation Performance Dashboard <span class="badge">LIVE DEMO</span></h1>
+  </div>
+  <span>Dataset: 12,000 claims &nbsp;|&nbsp; Jan 2024 – Dec 2024 &nbsp;|&nbsp; Jeevan Lal Mourya</span>
+</div>
+
+<div class="container">
+
+  <!-- KPI ROW -->
+  <div class="kpi-grid">
+    <div class="kpi" style="--accent:#00c49a">
+      <div class="label">Cycle Time Reduction</div>
+      <div class="value">75.5%</div>
+      <div class="sub up arrow-up">6.9 days → 1.7 days</div>
+    </div>
+    <div class="kpi" style="--accent:#6366f1">
+      <div class="label">Error Rate Reduction</div>
+      <div class="value">9.5pp</div>
+      <div class="sub up arrow-up">13.5% → 4.0%</div>
+    </div>
+    <div class="kpi" style="--accent:#f59e0b">
+      <div class="label">Est. Annual FTE Savings</div>
+      <div class="value">$132K</div>
+      <div class="sub up arrow-up">2,105 hrs saved in 6 mo</div>
+    </div>
+    <div class="kpi" style="--accent:#0ea5e9">
+      <div class="label">Approval Rate Gain</div>
+      <div class="value">+13.9pp</div>
+      <div class="sub up arrow-up">68.6% → 82.5%</div>
+    </div>
+  </div>
+
+  <!-- MAIN CHARTS -->
+  <div class="charts-grid">
+    <div class="card">
+      <h3>Monthly claim volume &amp; cycle time trend</h3>
+      <div class="toggle-row">
+        <button class="toggle-btn active" onclick="showMetric('volume',this)">Volume</button>
+        <button class="toggle-btn" onclick="showMetric('days',this)">Cycle Time</button>
+        <button class="toggle-btn" onclick="showMetric('error',this)">Error Rate</button>
+      </div>
+      <canvas id="trendChart" height="90"></canvas>
+    </div>
+    <div class="card">
+      <h3>Status distribution</h3>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div style="flex:1"><canvas id="statusPre" height="140"></canvas><p style="text-align:center;font-size:11px;color:#888;margin-top:6px">Pre-Automation</p></div>
+        <div style="flex:1"><canvas id="statusPost" height="140"></canvas><p style="text-align:center;font-size:11px;color:#888;margin-top:6px">Post-Automation</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid2">
+    <div class="card">
+      <h3>Cycle time by claim type</h3>
+      <canvas id="typeChart" height="160"></canvas>
+    </div>
+    <div class="card">
+      <h3>ROI summary</h3>
+      <div class="roi-grid">
+        <div class="roi-item"><div class="rv">2,105</div><div class="rl">FTE Hours Saved (6 mo)</div></div>
+        <div class="roi-item"><div class="rv">$132K</div><div class="rl">Est. Annual Savings</div></div>
+        <div class="roi-item"><div class="rv">9.5pp</div><div class="rl">Error Rate Reduction</div></div>
+        <div class="roi-item"><div class="rv">75.5%</div><div class="rl">Cycle Time Reduction</div></div>
+      </div>
+      <div style="margin-top:14px">
+        <canvas id="roiBar" height="90"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Data validation results</h3>
+      <table>
+        <thead><tr><th>Check</th><th>Issues</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Null claim_id</td><td>0</td><td><span class="pill pill-green">Pass</span></td></tr>
+          <tr><td>Null submitted_date</td><td>0</td><td><span class="pill pill-green">Pass</span></td></tr>
+          <tr><td>Negative amount</td><td>0</td><td><span class="pill pill-green">Pass</span></td></tr>
+          <tr><td>Processing days &lt; 0</td><td>0</td><td><span class="pill pill-green">Pass</span></td></tr>
+          <tr><td>Invalid status values</td><td>0</td><td><span class="pill pill-green">Pass</span></td></tr>
+          <tr><td>Duplicate claim_id</td><td>0</td><td><span class="pill pill-green">Pass</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;background:#f0fdf4;border-radius:6px;padding:9px 12px;font-size:12px;color:#166534">
+        ✓ All 12,000 records passed validation — dataset certified clean
+      </div>
+    </div>
+  </div>
+
+  <!-- PROVIDER TABLE -->
+  <div class="card" style="margin-bottom:14px">
+    <h3>Top 10 providers — volume, error rate &amp; throughput</h3>
+    <table>
+      <thead><tr><th>Provider</th><th>Total Claims</th><th>Error Rate</th><th>Avg Cycle Days</th><th>Total Billed ($)</th><th>Performance</th></tr></thead>
+      <tbody id="providerTable"></tbody>
+    </table>
+  </div>
+
+</div>
+<div class="footer">Dental Claims Automation Performance Dashboard &nbsp;·&nbsp; Built with SQL + Python + Chart.js &nbsp;·&nbsp; Portfolio Project — Jeevan Lal Mourya</div>
+
+<script>
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const labels = months.map((m,i) => (i<6?'2024 '+m+' (Pre)':'2024 '+months[i]+' (Post)'));
+
+const volumeData = [1073,997,1029,967,1026,908,1038,994,996,1033,1009,930];
+const daysData   = [6.99,6.91,6.82,6.90,6.92,6.82,1.71,1.68,1.67,1.66,1.70,1.70];
+const errorData  = [13.51,13.44,14.19,13.55,11.99,14.43,4.14,4.63,3.61,3.97,3.57,4.19];
+
+const palette = {pre:'#6366f1', post:'#00c49a', grid:'rgba(0,0,0,0.06)'};
+
+function barColors(){ return volumeData.map((_,i)=>i<6?palette.pre+'cc':palette.post+'cc'); }
+
+let trendChart;
+function buildTrend(metric){
+  const data   = metric==='volume'?volumeData:metric==='days'?daysData:errorData;
+  const label  = metric==='volume'?'Claim Volume':metric==='days'?'Avg Cycle Days':'Error Rate (%)';
+  const colors = barColors();
+  if(trendChart) trendChart.destroy();
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  trendChart = new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{label,data,backgroundColor:colors,borderRadius:4,borderSkipped:false}]},
+    options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}},y:{grid:{color:palette.grid},ticks:{font:{size:11}}}},animation:{duration:400}}
+  });
+}
+buildTrend('volume');
+function showMetric(m,btn){
+  document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildTrend(m);
+}
+
+function donut(id, labels, data, colors){
+  new Chart(document.getElementById(id).getContext('2d'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+    options:{cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}}},animation:{animateRotate:true}}
+  });
+}
+donut('statusPre',['Approved','Error','Denied','Duplicate','Pending'],
+  [68.6,13.5,8.0,5.0,4.9],['#6366f1','#ef4444','#f59e0b','#94a3b8','#cbd5e1']);
+donut('statusPost',['Approved','Error','Denied','Pending','Duplicate'],
+  [82.5,4.0,7.8,4.7,1.0],['#00c49a','#ef4444','#f59e0b','#cbd5e1','#94a3b8']);
+
+new Chart(document.getElementById('typeChart').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:['Restorative','Diagnostic','Oral Surgery','Periodontic','Orthodontic','Preventive'],
+    datasets:[
+      {label:'Pre-Automation',data:[6.99,6.93,6.90,6.88,6.86,6.83],backgroundColor:palette.pre+'bb',borderRadius:3},
+      {label:'Post-Automation',data:[1.71,1.69,1.68,1.69,1.68,1.67],backgroundColor:palette.post+'bb',borderRadius:3}
+    ]
+  },
+  options:{plugins:{legend:{labels:{font:{size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:palette.grid},title:{display:true,text:'Avg Days',font:{size:11}}}}}
+});
+
+new Chart(document.getElementById('roiBar').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:['Pre-Auto','Post-Auto'],
+    datasets:[
+      {label:'Approval %',data:[68.6,82.5],backgroundColor:['#6366f155','#00c49a55'],borderColor:['#6366f1','#00c49a'],borderWidth:1.5,borderRadius:4},
+      {label:'Error %',data:[13.5,4.0],backgroundColor:['#ef444455','#ef444422'],borderColor:['#ef4444','#fca5a5'],borderWidth:1.5,borderRadius:4}
+    ]
+  },
+  options:{plugins:{legend:{labels:{font:{size:10}}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:palette.grid},max:100,ticks:{callback:v=>v+'%',font:{size:10}}}}}
+});
+
+const providers = [
+  {id:'Provider_007',total:278,err:9.4,days:4.31,billed:275440},
+  {id:'Provider_023',total:265,err:8.7,days:4.18,billed:261980},
+  {id:'Provider_041',total:259,err:11.2,days:4.55,billed:254820},
+  {id:'Provider_015',total:254,err:7.9,days:4.02,billed:249760},
+  {id:'Provider_038',total:248,err:6.5,days:3.89,billed:245120},
+  {id:'Provider_002',total:243,err:12.8,days:4.67,billed:239840},
+  {id:'Provider_029',total:239,err:5.4,days:3.71,billed:236010},
+  {id:'Provider_011',total:235,err:9.1,days:4.23,billed:231550},
+  {id:'Provider_047',total:231,err:4.2,days:3.58,billed:228090},
+  {id:'Provider_034',total:228,err:14.9,days:4.88,billed:225340},
+];
+const tb = document.getElementById('providerTable');
+providers.forEach(p=>{
+  const perf = p.err<6?'<span class="pill pill-green">Good</span>':p.err<10?'<span class="pill pill-amber">Average</span>':'<span class="pill pill-red">Review</span>';
+  tb.innerHTML += `<tr><td><b>${p.id}</b></td><td>${p.total}</td><td>${p.err}%</td><td>${p.days}</td><td>$${p.billed.toLocaleString()}</td><td>${perf}</td></tr>`;
+});
+</script>
+</body>
+</html>
