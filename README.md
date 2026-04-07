@@ -1,4 +1,5 @@
 # Dental Claims Automation Performance Dashboard
+![Dashboard Preview ](image.png)
 ### Business Process Analyst Portfolio Project | Jeevan Lal Mourya
 
 > Analyzes the impact of claims processing automation at a dental insurance company using SQL, Python, and interactive dashboarding 
