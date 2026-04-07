@@ -1,7 +1,7 @@
 # Dental Claims Automation Performance Dashboard
 ![Dashboard Preview ](image.png)
 ![Dashboard Preview 2 ](image1.png)
-
+![Claims Process Map](process_map.png)
 ### Business Process Analyst Portfolio Project | Jeevan Lal Mourya
 
 > Analyzes the impact of claims processing automation at a dental insurance company using SQL, Python, and interactive dashboarding 
@@ -119,5 +119,30 @@ open dashboard/dashboard.html
 | month | VARCHAR | YYYY-MM extracted from submitted_date | Derived | Daily |
 
 ---
+Assumptions & Methodology
+Data
+This project uses a synthetic dataset of 12,000 dental claims generated to reflect realistic operational patterns at a dental insurance company. No real patient or provider data was used. Pre-automation period: Jan–Jun 2024 (6,000 claims). Post-automation period: Jul–Dec 2024 (6,000 claims).
+
+KPI Definitions & Formulas
+KPIFormulaUnitAvg Cycle TimeSUM(processing_days) / COUNT(claims)DaysError RateCOUNT(status='Error') / COUNT(*) × 100%Approval RateCOUNT(status='Approved') / COUNT(*) × 100%Duplicate RateCOUNT(status='Duplicate') / COUNT(*) × 100%FTE Hours SavedSUM(manual_minutes - auto_minutes) / 60HoursCycle Time Reduction(1 - post_avg_days / pre_avg_days) × 100%
+
+ROI Assumptions
+AssumptionValueRationaleHourly staff rate$28/hrBased on TriForza internship hourly rate as proxyPre-automation manual time23.6 min/claimSampled from HR/ops system simulationPost-automation processing< 4 min/claimAutomation logs simulationAnnualization factor×26-month observed period × 2 = full year estimateAnnual FTE savings formula(Total manual hrs saved × 2) × $28Conservative estimate
+
+Note: ROI figures are estimates based on synthetic data and stated assumptions. Real-world results would vary based on actual automation costs, staff rates, and claim volumes.
+
+
+Measurement Cadence
+MetricFrequencyOwnerCycle Time, Error Rate, VolumeWeeklyOperations AnalystApproval Rate, Duplicate RateMonthlyClaims ManagerFTE Hours Saved, ROIQuarterlyFinance / Leadership
+
+Data Validation Approach
+All 12,000 records passed a 6-check validation suite before analysis:
+
+No null claim IDs or submission dates
+No negative claim amounts
+No negative processing days
+No invalid status values
+No duplicate claim IDs
+
 
 *Dataset is fully synthetic — no real patient or provider data used.*
